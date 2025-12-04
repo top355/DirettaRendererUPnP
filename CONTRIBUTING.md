@@ -100,7 +100,7 @@ make
 make test
 
 # Test manually
-sudo ./bin/DirettaRendererComplete --port 4005 --buffer 2.0
+sudo ./bin/DirettaRendererUPnP --port 4005 --buffer 2.0
 ```
 
 ### Keep Your Fork Updated
@@ -392,7 +392,7 @@ make clean
 CXXFLAGS="-g -DDEBUG" make
 
 # Run with GDB
-sudo gdb ./bin/DirettaRendererComplete
+sudo gdb ./bin/DirettaRendererUPnP
 (gdb) run --port 4005 --buffer 2.0
 ```
 

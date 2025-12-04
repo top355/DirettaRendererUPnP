@@ -73,7 +73,7 @@ sudo systemctl restart diretta-renderer
 
 # Or manually kill and restart
 sudo pkill DirettaRenderer
-sudo ./bin/DirettaRendererComplete --port 4005 --buffer 2.0
+sudo ./bin/DirettaRendererUPnP --port 4005 --buffer 2.0
 ```
 
 #### Solution 5: Check UPnP Description URL
@@ -646,7 +646,7 @@ uname -a
 cat /etc/os-release
 
 # Renderer version
-./bin/DirettaRendererComplete --version
+./bin/DirettaRendererUPnP --version
 
 # Network config
 ip addr show

@@ -159,7 +159,7 @@ sed -i "s|SDK_PATH = .*|SDK_PATH = $SDK_PATH|g" Makefile
 make clean
 make
 
-if [ ! -f "bin/DirettaRendererComplete" ]; then
+if [ ! -f "bin/DirettaRendererUPnP" ]; then
     print_error "Build failed. Please check error messages above."
     exit 1
 fi

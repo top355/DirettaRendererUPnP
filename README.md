@@ -126,7 +126,7 @@ sudo ./bin/DirettaRendererUPnP --port 4005 --buffer 2.0
 ## 🎛️ Command-Line Options
 
 ```bash
-sudo ./DirettaRendererComplete [OPTIONS]
+sudo ./DirettaRendererUPnP [OPTIONS]
 
 Options:
   --port <number>      UPnP control port (default: 4005)

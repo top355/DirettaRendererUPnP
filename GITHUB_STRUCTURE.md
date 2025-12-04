@@ -137,7 +137,7 @@ Your actual source code files:
    - Debug outputs
 
 5. **Compiled Binaries**
-   - DirettaRendererComplete
+   - DirettaRendererUPnP
    - Any executables
 
 ## Optional Enhancements

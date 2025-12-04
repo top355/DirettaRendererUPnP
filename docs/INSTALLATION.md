@@ -220,17 +220,17 @@ make
 # Compiling main.cpp...
 # Compiling DirettaRenderer.cpp...
 # ...
-# ✓ Build complete: bin/DirettaRendererComplete
+# ✓ Build complete: bin/DirettaRendererUPnP
 ```
 
 ### 4. Verify Binary
 
 ```bash
-ls -lh bin/DirettaRendererComplete
+ls -lh bin/DirettaRendererUPnP
 # Should show the executable
 
 # Check dependencies
-ldd bin/DirettaRendererComplete
+ldd bin/DirettaRendererUPnP
 # Should NOT show "not found" errors
 ```
 
@@ -333,7 +333,7 @@ sudo -v
 
 ```bash
 cd ~/audio-projects/DirettaUPnPRenderer/bin
-sudo ./DirettaRendererComplete --port 4005 --buffer 2.0
+sudo ./DirettaRendererUPnP --port 4005 --buffer 2.0
 ```
 
 ### 3. Expected Output
@@ -394,7 +394,7 @@ Wants=network-online.target
 Type=simple
 User=root
 WorkingDirectory=/home/YOUR_USERNAME/audio-projects/DirettaUPnPRenderer/bin
-ExecStart=/home/YOUR_USERNAME/audio-projects/DirettaUPnPRenderer/bin/DirettaRendererComplete --port 4005 --buffer 2.0
+ExecStart=/home/YOUR_USERNAME/audio-projects/DirettaUPnPRenderer/bin/DirettaRendererUPnP --port 4005 --buffer 2.0
 Restart=on-failure
 RestartSec=5
 StandardOutput=journal

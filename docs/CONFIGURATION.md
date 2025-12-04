@@ -18,7 +18,7 @@ Detailed configuration options and tuning guide.
 ### Basic Usage
 
 ```bash
-sudo ./DirettaRendererComplete [OPTIONS]
+sudo ./DirettaRendererUPnP [OPTIONS]
 ```
 
 ### Available Options
@@ -28,7 +28,7 @@ sudo ./DirettaRendererComplete [OPTIONS]
 **Description**: UPnP control port  
 **Example**:
 ```bash
-sudo ./DirettaRendererComplete --port 4005
+sudo ./DirettaRendererUPnP --port 4005
 ```
 
 **Note**: Port 4006 (port+1) is automatically used for HTTP server.
@@ -39,7 +39,7 @@ sudo ./DirettaRendererComplete --port 4005
 **Description**: Audio buffer size in seconds  
 **Example**:
 ```bash
-sudo ./DirettaRendererComplete --buffer 2.0
+sudo ./DirettaRendererUPnP --buffer 2.0
 ```
 
 **Recommendations**:
@@ -53,7 +53,7 @@ sudo ./DirettaRendererComplete --buffer 2.0
 **Description**: Friendly name shown in UPnP control points  
 **Example**:
 ```bash
-sudo ./DirettaRendererComplete --name "Living Room Audio"
+sudo ./DirettaRendererUPnP --name "Living Room Audio"
 ```
 
 #### `--uuid <string>`
@@ -61,7 +61,7 @@ sudo ./DirettaRendererComplete --name "Living Room Audio"
 **Description**: Unique device identifier  
 **Example**:
 ```bash
-sudo ./DirettaRendererComplete --uuid "uuid:my-custom-id-123"
+sudo ./DirettaRendererUPnP --uuid "uuid:my-custom-id-123"
 ```
 
 **Note**: Keep the same UUID to maintain device identity across restarts.
@@ -71,7 +71,7 @@ sudo ./DirettaRendererComplete --uuid "uuid:my-custom-id-123"
 **Description**: Disable gapless playback  
 **Example**:
 ```bash
-sudo ./DirettaRendererComplete --no-gapless
+sudo ./DirettaRendererUPnP --no-gapless
 ```
 
 **Use case**: Debugging or compatibility with certain control points.
@@ -79,7 +79,7 @@ sudo ./DirettaRendererComplete --no-gapless
 ### Combined Example
 
 ```bash
-sudo ./DirettaRendererComplete \
+sudo ./DirettaRendererUPnP \
   --port 4005 \
   --buffer 2.0 \
   --name "Bedroom Diretta" \
@@ -410,7 +410,7 @@ sudo ip link set enp4s0 mtu 9000
 echo performance | sudo tee /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor
 
 # Renderer
-sudo ./DirettaRendererComplete --buffer 2.0
+sudo ./DirettaRendererUPnP --buffer 2.0
 ```
 
 **Best for**: DSD, 24bit/192k+, audiophile setups
@@ -422,7 +422,7 @@ sudo ./DirettaRendererComplete --buffer 2.0
 sudo ip link set enp4s0 mtu 1500
 
 # Renderer
-sudo ./DirettaRendererComplete --buffer 3.0
+sudo ./DirettaRendererUPnP --buffer 3.0
 ```
 
 **Best for**: Standard networks, CD-quality playback
@@ -434,7 +434,7 @@ sudo ./DirettaRendererComplete --buffer 3.0
 sudo ip link set enp4s0 mtu 9000
 
 # Renderer
-sudo ./DirettaRendererComplete --buffer 1.5
+sudo ./DirettaRendererUPnP --buffer 1.5
 ```
 
 **Best for**: Local playback, minimal latency requirements
