@@ -567,6 +567,23 @@ section below.
 
 ---
 
+## ❤️ Support This Project
+
+If you find this renderer valuable, you can support development:
+
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/cometdomi)
+
+**Important notes:**
+- ✅ Donations are **optional** and appreciated
+- ✅ Help cover test equipment and coffee ☕
+- ❌ **No guarantees** for features, support, or timelines
+- ❌ The project remains free and open source for everyone
+
+This is a hobby project - donations support development but don't create obligations.
+
+Thank you! 🎵
+
+---
 ## Contributing
 
 Contributions are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) for:
