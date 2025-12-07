@@ -200,6 +200,22 @@ make VARIANT=15zen4    # AMD Zen 4 optimized
 make NOLOG=1           # Production build (no debug logs)
 make list-variants     # Show all available options
 ```
+## Platform Support
+
+### Officially Supported ✅
+- **Linux x64** (Fedora, Ubuntu, Arch, AudioLinux)
+- **Linux ARM64** (Raspberry Pi 4/5)
+
+### Not Supported ❌
+- **Windows**: No native Windows version planned
+- **macOS**: Not tested, may work with modifications
+
+### Why Linux only?
+This is a personal project maintained by one developer in their free time. 
+Supporting multiple platforms would require significant additional effort 
+for development, testing, and user support.
+
+**Community contributions welcome**, but Windows/macOS support is not a priority.
 
 ### Hardware
 - **Minimum**: Dual-core CPU, 1GB RAM, Gigabit Ethernet
@@ -522,6 +538,21 @@ For more solutions, see the [Troubleshooting Guide](docs/TROUBLESHOOTING.md).
 ### Q: What's better than a regular UPnP renderer?
 **A:** This renderer bypasses the OS audio stack by using the Diretta protocol. The audio goes directly from network to your Diretta Target to DAC, maintaining bit-perfect quality.
 
+### Q: Will there be a Windows version?
+**A:** No, Windows support is not planned. This is a one-person project and 
+I prefer to focus on making the Linux version excellent. 
+
+You can use **WSL2** to run the renderer on Windows, or consider dual-booting Linux.
+
+### Q: Can I pay for Windows support?
+**A:** Even with funding, I don't have the time to properly support Windows. 
+If you're interested in a Windows port, consider hiring a developer to fork 
+the project.
+
+### Q: Why is this free if it costs you time/money?
+**A:** I built this for myself and the audiophile community. It's a passion 
+project, not a business. However, if you find it valuable, see the "Support" 
+section below.
 ---
 
 ## Roadmap
