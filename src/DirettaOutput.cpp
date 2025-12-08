@@ -698,10 +698,13 @@ bool DirettaOutput::verifyTargetAvailable() {
         std::cout << std::endl;
         std::cout << "[DirettaOutput] " << std::endl;
         
-        // Display brief target info
-        for (size_t i = 0; i < targets.size(); i++) {
-            std::cout << "[DirettaOutput] Target #" << (i + 1) << ": " 
-                      << targets[i].Device << std::endl;
+        // ⭐ CORRECTION: Itérer sur la map avec un itérateur
+        int targetNum = 1;
+        for (const auto& targetPair : targets) {
+            const auto& targetInfo = targetPair.second;
+            std::cout << "[DirettaOutput] Target #" << targetNum << ": " 
+                      << targetInfo.Device << std::endl;
+            targetNum++;
         }
         std::cout << "[DirettaOutput] " << std::endl;
         
@@ -713,8 +716,14 @@ bool DirettaOutput::verifyTargetAvailable() {
                 std::cerr << "[DirettaOutput] Please run --list-targets to see available targets" << std::endl;
                 return false;
             }
+            
+            // ⭐ CORRECTION: Trouver la target à l'index demandé
+            auto it = targets.begin();
+            std::advance(it, m_targetIndex);
+            const auto& targetInfo = it->second;
+            
             std::cout << "[DirettaOutput] ✓ Will use target #" << (m_targetIndex + 1) 
-                      << " (" << targets[m_targetIndex].Device << ")" << std::endl;
+                      << " (" << targetInfo.Device << ")" << std::endl;
             std::cout << "[DirettaOutput] " << std::endl;
         } else if (targets.size() > 1) {
             std::cout << "[DirettaOutput] 💡 Multiple targets detected. Interactive selection will be used." << std::endl;
