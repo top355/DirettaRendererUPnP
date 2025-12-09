@@ -60,38 +60,41 @@ Diretta is a proprietary audio streaming protocol developed by Yu Harada that en
 ### Complete Signal Path
 
 ```
-┌─────────────────────────────────────────────────────────────────────────┐
-│                         AUDIO STREAMING PATH                             │
-└─────────────────────────────────────────────────────────────────────────┘
-
-    UPnP Control Point              Diretta Renderer              Diretta Target              DAC
-    (JPlay, BubbleUPnP)          (This Application)          (Memory Play, etc.)        (Holo, etc.)
-          │                              │                           │                      │
-          │  ① UPnP Commands             │                           │                      │
-          │  (Play/Stop/Seek)            │                           │                      │
-          ├─────────────────────────────>│                           │                      │
-          │                              │                           │                      │
-          │  ② HTTP Audio Stream         │                           │                      │
-          │  (FLAC/WAV/DSD from          │                           │                      │
-          │   media server)              │                           │                      │
-          ├─────────────────────────────>│                           │                      │
-          │                              │                           │                      │
-          │                              │  ③ Diretta Protocol       │                      │
-          │                              │  (Bit-perfect PCM/DSD)    │                      │
-          │                              │  via Ethernet (IPV6)      │                      │
-          │                              ├──────────────────────────>│                      │
-          │                              │                           │                      │
-          │                              │                           │  ④ Audio Output      │
-          │                              │                           │  (USB/I2S/SPDIF)     │
-          │                              │                           ├─────────────────────>│
-          │                              │                           │                      │
-          │                              │                           │                   ┌──┴──┐
-          │                              │                           │                   │ D/A │
-          │                              │                           │                   └──┬──┘
-          │                              │                           │                      │
-          │                              │                           │                   Analog
-          │                              │                           │                    Audio
-          ▼                              ▼                           ▼                      ▼
+┌─────────────────────────┐
+│  UPnP Control Point     │  (JPlay, BubbleUPnP, etc.)
+│  (Phone/Tablet/PC)      │
+└───────────┬─────────────┘
+            │ UPnP/DLNA Protocol
+            ▼
+┌─────────────────────────┐
+│  Diretta UPnP Renderer  │
+│  ┌───────────────────┐  │
+│  │  UPnP Device      │  │  Handles UPnP protocol
+│  ├───────────────────┤  │
+│  │  AudioEngine      │  │  Manages playback, FFmpeg decoding
+│  ├───────────────────┤  │
+│  │  DirettaOutput    │  │  Interfaces with Diretta SDK
+│  └───────────────────┘  │
+└───────────┬─────────────┘
+            │ Diretta Protocol (UDP/Ethernet)
+            │ Bit-perfect audio samples
+            ▼
+┌─────────────────────────┐
+│     Diretta TARGET      │  
+│  - Receives packets     │
+│  - Clock synchronization│
+│                         │
+└───────────┬─────────────┘
+            |
+            |
+            ▼
+┌─────────────────────────┐
+│          DAC            │  
+│  - D/A conversion       │
+└───────────┬─────────────┘
+            │
+            ▼
+        🔊 Speakers
 ```
 
 ### Component Details
@@ -277,10 +280,29 @@ cd DirettaRendererUPnP
 # Build (Makefile auto-detects SDK location)
 make
 
-# Or use install script
-chmod +x install.sh
-sudo ./install.sh
-```
+# Install service
+cd systemd
+chmod +x install-systemd.sh
+sudo ./install-systemd.sh
+
+#Next steps:
+ 1. Edit configuration (optional):
+     sudo nano /opt/diretta-renderer-upnp/diretta-renderer.conf
+ 2. Reload daemon:
+     sudo systemctl daemon-reload
+ 3. Enable the service:
+     sudo systemctl enable diretta-renderer
+ 4. Start the service:
+     sudo systemctl start diretta-renderer
+ 5. Check status:
+     sudo systemctl status diretta-renderer 
+ 6. View logs:
+     sudo journalctl -u diretta-renderer -f
+ 7. Stop the service:
+     sudo systemctl stop diretta-renderer
+ 8. Disable auto-start:
+     sudo systemctl disable diretta-renderer       
+
 
 ### 4. Configure Network
 
@@ -636,4 +658,4 @@ This software is provided "as is" without warranty. While designed for high-qual
 
 **Enjoy bit-perfect, high-resolution audio streaming! 🎵**
 
-*Last updated: 2025-12-05*
+*Last updated: 2025-12-09*
