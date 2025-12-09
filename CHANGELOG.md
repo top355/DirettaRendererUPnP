@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Improving the detection of actual bit depth from the audio source
   - Fixed detection of actual bit depth from audio source
   - Detect real bit depth from source instead of relying on FFmpeg's internal format
+  - Adjust sync buffer thread mode to improve performance (thanks to herisson88)
  **Diretta Target**
   - Increase retry delay for target availability verification from 2 to 5 seconds
   - Update target information display to use targetName instead of Device
