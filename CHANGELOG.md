@@ -17,7 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 ## [1.0.5]
-## Fixed
+### Fixed
 **Audio Player**
   No more delays when starting playback
   Now you can set --buffer from 0.5 to 4 to ensure gapless playback on your setup.
