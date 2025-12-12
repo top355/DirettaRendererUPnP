@@ -571,6 +571,27 @@ size_t AudioDecoder::readSamples(AudioBuffer& buffer, size_t numSamples,
                 }
             }
         }
+
+
+    // ✅ DEBUG: Dump first 64 bytes to understand Audirvana's format
+    static bool dumped = false;
+    if (!dumped && totalBytesRead >= 64) {
+        std::cout << "\n[DEBUG] First 64 bytes from Audirvana DFF:" << std::endl;
+        std::cout << "[DEBUG] Hex dump:" << std::endl;
+        
+        const uint8_t* data = buffer.data();
+        for (int i = 0; i < 64; i++) {
+            printf("%02X ", data[i]);
+            if ((i + 1) % 16 == 0) printf("\n");
+        }
+        
+        std::cout << "\n[DEBUG] Codec: " << m_trackInfo.codec << std::endl;
+        std::cout << "[DEBUG] Sample rate: " << m_trackInfo.sampleRate << std::endl;
+        std::cout << "[DEBUG] Channels: " << m_trackInfo.channels << std::endl;
+        
+        dumped = true;
+    }
+
             // DFF stores 32-bit words in Big Endian, but DAC expects Little Endian
     if (m_trackInfo.codec.find("msbf") != std::string::npos) {
         uint32_t* data32 = reinterpret_cast<uint32_t*>(buffer.data());
