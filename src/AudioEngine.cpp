@@ -575,7 +575,26 @@ size_t AudioDecoder::readSamples(AudioBuffer& buffer, size_t numSamples,
                 }
             }
         }
+            // DFF stores 32-bit words in Big Endian, but DAC expects Little Endian
+    if (m_trackInfo.codec.find("msbf") != std::string::npos) {
+        uint32_t* data32 = reinterpret_cast<uint32_t*>(buffer.data());
+        size_t numWords = totalBytesRead / 4;
         
+        for (size_t i = 0; i < numWords; i++) {
+            uint32_t word = data32[i];
+            // Swap bytes: ABCD → DCBA
+            data32[i] = ((word & 0x000000FF) << 24) |
+                       ((word & 0x0000FF00) << 8)  |
+                       ((word & 0x00FF0000) >> 8)  |
+                       ((word & 0xFF000000) >> 24);
+        }
+        
+        static bool swapLogged = false;
+        if (!swapLogged) {
+            std::cout << "[AudioDecoder] 🔄 Byte swap applied for DFF (Big → Little Endian)" << std::endl;
+            swapLogged = true;
+        }
+    }
         // ✅ Bit reversal for DFF (MSB → LSB conversion)
         // Only needed when codec is DFF (MSB First)
         if (ENABLE_BIT_REVERSAL) {
