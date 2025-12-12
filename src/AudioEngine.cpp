@@ -592,10 +592,11 @@ size_t AudioDecoder::readSamples(AudioBuffer& buffer, size_t numSamples,
         dumped = true;
     }
 
-// ✅ CRITICAL: Convert DFF → DSF (Byte Swap + Bit Reversal COMBINED)
+    // ✅ CRITICAL: Convert DFF for Diretta (Bit reversal ONLY, no byte swap)
+    // According to SDK: FMT_DSD_SIZ_32 uses Little Endian for BOTH DSF and DFF
+    // Only the BIT order differs (LSB vs MSB)
     if (m_trackInfo.codec.find("msbf") != std::string::npos) {
-        uint32_t* data32 = reinterpret_cast<uint32_t*>(buffer.data());
-        size_t numWords = totalBytesRead / 4;
+        uint8_t* data = buffer.data();
         
         // Lookup table for bit reversal
         static const uint8_t bitReverseTable[256] = {
@@ -617,29 +618,14 @@ size_t AudioDecoder::readSamples(AudioBuffer& buffer, size_t numSamples,
             0x0F, 0x8F, 0x4F, 0xCF, 0x2F, 0xAF, 0x6F, 0xEF, 0x1F, 0x9F, 0x5F, 0xDF, 0x3F, 0xBF, 0x7F, 0xFF
         };
         
-        // Process each 32-bit word
-        for (size_t i = 0; i < numWords; i++) {
-            uint32_t word = data32[i];
-            
-            // Step 1: Byte swap (Big → Little Endian)
-            word = ((word & 0x000000FF) << 24) |
-                   ((word & 0x0000FF00) << 8)  |
-                   ((word & 0x00FF0000) >> 8)  |
-                   ((word & 0xFF000000) >> 24);
-            
-            // Step 2: Bit reversal (MSB → LSB) on each byte
-            uint8_t* bytes = reinterpret_cast<uint8_t*>(&word);
-            bytes[0] = bitReverseTable[bytes[0]];
-            bytes[1] = bitReverseTable[bytes[1]];
-            bytes[2] = bitReverseTable[bytes[2]];
-            bytes[3] = bitReverseTable[bytes[3]];
-            
-            data32[i] = word;
+        // Bit reversal ONLY (no byte swap!)
+        for (size_t i = 0; i < totalBytesRead; i++) {
+            data[i] = bitReverseTable[data[i]];
         }
         
         static bool logged = false;
         if (!logged) {
-            std::cout << "[AudioDecoder] 🔄 DFF → DSF: Byte swap + Bit reversal applied" << std::endl;
+            std::cout << "[AudioDecoder] 🔄 DFF: Bit reversal ONLY (MSB→LSB, keep LE)" << std::endl;
             logged = true;
         }
     }
