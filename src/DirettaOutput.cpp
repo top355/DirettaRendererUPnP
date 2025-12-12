@@ -942,57 +942,8 @@ bool DirettaOutput::configureDiretta(const AudioFormat& format) {
         case 6: formatID |= DIRETTA::FormatID::CHA_6; break;
         case 8: formatID |= DIRETTA::FormatID::CHA_8; break;
         default: formatID |= DIRETTA::FormatID::CHA_2; break;
-    }
-
-        
-        uint32_t baseRate;
-        uint32_t multiplier;
-        
-        if (format.sampleRate % 44100 == 0) {
-            baseRate = 44100;
-            multiplier = format.sampleRate / 44100;
-            formatID |= DIRETTA::FormatID::RAT_44100;
-        } else if (format.sampleRate % 48000 == 0) {
-            baseRate = 48000;
-            multiplier = format.sampleRate / 48000;
-            formatID |= DIRETTA::FormatID::RAT_48000;
-        } else {
-            baseRate = 44100;
-            multiplier = 1;
-            formatID |= DIRETTA::FormatID::RAT_44100;
-        }
-        
-        std::cout << "[DirettaOutput] " << format.sampleRate << "Hz = " 
-                  << baseRate << "Hz × " << multiplier << std::endl;
-        
-        if (multiplier == 1) {
-            formatID |= DIRETTA::FormatID::RAT_MP1;
-            std::cout << "[DirettaOutput] Multiplier: x1 (RAT_MP1)" << std::endl;
-        } else if (multiplier == 2) {
-            formatID |= DIRETTA::FormatID::RAT_MP2;
-            std::cout << "[DirettaOutput] Multiplier: x2 (RAT_MP2)" << std::endl;
-        } else if (multiplier == 4) {
-            formatID |= DIRETTA::FormatID::RAT_MP4;
-            std::cout << "[DirettaOutput] Multiplier: x4 (RAT_MP4 ONLY)" << std::endl;
-        } else if (multiplier == 8) {
-            formatID |= DIRETTA::FormatID::RAT_MP8;
-            std::cout << "[DirettaOutput] Multiplier: x8 (RAT_MP8 ONLY)" << std::endl;
-        } else if (multiplier >= 16) {
-            formatID |= DIRETTA::FormatID::RAT_MP16;
-            std::cout << "[DirettaOutput] Multiplier: x16 (RAT_MP16 ONLY)" << std::endl;
-        }
-    }
-    
-    // Add channels (common to both PCM and DSD)
-    switch (format.channels) {
-        case 1: formatID |= DIRETTA::FormatID::CHA_1; break;
-        case 2: formatID |= DIRETTA::FormatID::CHA_2; break;
-        case 4: formatID |= DIRETTA::FormatID::CHA_4; break;
-        case 6: formatID |= DIRETTA::FormatID::CHA_6; break;
-        case 8: formatID |= DIRETTA::FormatID::CHA_8; break;
-        default: formatID |= DIRETTA::FormatID::CHA_2; break;
     }    
-    // ===== SYNCBUFFER SETUP (SinHost order) =====
+     // ===== SYNCBUFFER SETUP (SinHost order) =====
     std::cout << "[DirettaOutput] 1. Opening..." << std::endl;
     m_syncBuffer->open(
         DIRETTA::Sync::THRED_MODE(1),
