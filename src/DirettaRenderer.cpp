@@ -677,7 +677,7 @@ void DirettaRenderer::audioThreadFunc() {
 }
 
 void DirettaRenderer::positionThreadFunc() {
-    std::cout << "[Position Thread] Started - updating position for eventing" << std::endl;
+    DEBUG_LOG("[Position Thread] Started - updating position for eventing");
     
     while (m_running) {
         if (!m_audioEngine || !m_upnp) {
@@ -710,7 +710,7 @@ void DirettaRenderer::positionThreadFunc() {
             // Log périodique (toutes les 10 secondes pour ne pas polluer)
             static int lastLoggedPosition = -10;
             if (position - lastLoggedPosition >= 10) {
-                std::cout << "[Position Thread] 📍 Position: " << position << "s / " << duration << "s" << std::endl;
+                DEBUG_LOG("[Position Thread] 📍 Position: " << position << "s / " << duration << "s");
                 lastLoggedPosition = position;
             }
         }
