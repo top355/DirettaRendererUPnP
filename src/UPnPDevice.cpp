@@ -11,7 +11,7 @@
 // Logging system - Variable globale définie dans main.cpp
 // ============================================================================
 extern bool g_verbose;
-#define DEBUG_LOG(x) if (g_verbose) { std::cout << x); }
+#define DEBUG_LOG(x) if (g_verbose) { std::cout << x << std::endl; }
 
 
 // Helper pour extraire une valeur d'un document IXML
@@ -57,7 +57,7 @@ UPnPDevice::UPnPDevice(const Config& config)
     size_t numFormats = std::count(m_protocolInfo.begin(), m_protocolInfo.end(), ',') + 1;
     DEBUG_LOG("[UPnPDevice] ProtocolInfo: " 
               << m_protocolInfo.length() << " chars, "
-              << numFormats << " formats" << std::endl;
+              << numFormats << " formats");
 }
 
 UPnPDevice::~UPnPDevice() {
@@ -87,7 +87,7 @@ bool UPnPDevice::start() {
     m_actualPort = UpnpGetServerPort();
     
     DEBUG_LOG("[UPnPDevice] Server started: http://" << m_ipAddress 
-              << ":" << m_actualPort << std::endl;
+              << ":" << m_actualPort);
     
     // 3. Enable logging (optional)
     // UpnpInitLog();
@@ -146,7 +146,7 @@ bool UPnPDevice::start() {
     }
     
     DEBUG_LOG("[UPnPDevice] ✓ Device registered (handle=" 
-              << m_deviceHandle << ")" << std::endl;
+              << m_deviceHandle << ")");
     
     // 8. Send SSDP advertisements
     ret = UpnpSendAdvertisement(m_deviceHandle, 1800);  // 30 minutes
@@ -237,7 +237,7 @@ int UPnPDevice::handleActionRequest(UpnpActionRequest* request) {
     );
     
     DEBUG_LOG("[UPnPDevice] Action: " << actionName 
-              << " (service: " << serviceID << ")" << std::endl;
+              << " (service: " << serviceID << ")");
     
     // Dispatch AVTransport actions
     if (serviceID.find("AVTransport") != std::string::npos) {

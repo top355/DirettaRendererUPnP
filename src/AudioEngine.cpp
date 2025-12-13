@@ -203,7 +203,7 @@ bool AudioDecoder::open(const std::string& url) {
         DEBUG_LOG("[AudioDecoder] ✓ Uncompressed PCM (WAV/AIFF) - low latency path");
     } else {
         DEBUG_LOG("[AudioDecoder] ℹ️  Compressed format (" << codec->name 
-                  << ") - decoding required" << std::endl;
+                  << ") - decoding required");
     }
     
     // Check if DSD - CRITICAL: Use RAW mode for native DSD!
@@ -296,7 +296,7 @@ bool AudioDecoder::open(const std::string& url) {
     if (codecpar->bits_per_raw_sample > 0 && codecpar->bits_per_raw_sample <= 32) {
         realBitDepth = codecpar->bits_per_raw_sample;
         DEBUG_LOG("[AudioDecoder] ✓ Real bit depth from bits_per_raw_sample: " 
-                  << realBitDepth << " bits" << std::endl;
+                  << realBitDepth << " bits");
     }
     // Method 2: Deduce from codec ID (for PCM formats like WAV)
     else if (codecpar->codec_id == AV_CODEC_ID_PCM_S16LE || 
@@ -352,13 +352,13 @@ bool AudioDecoder::open(const std::string& url) {
 DEBUG_LOG("[AudioDecoder] 🎵 PCM: " << m_trackInfo.codec 
           << " " << m_trackInfo.sampleRate << "Hz/"
           << m_trackInfo.bitDepth << "bit/"
-          << m_trackInfo.channels << "ch" << std::endl;
+          << m_trackInfo.channels << "ch")
 
     
     DEBUG_LOG("[AudioDecoder] 🎵 PCM: " << m_trackInfo.codec 
               << " " << m_trackInfo.sampleRate << "Hz/"
               << m_trackInfo.bitDepth << "bit/"
-              << m_trackInfo.channels << "ch" << std::endl;
+              << m_trackInfo.channels << "ch");
     
     // Calculate duration
     if (audioStream->duration != AV_NOPTS_VALUE) {
@@ -490,7 +490,7 @@ size_t AudioDecoder::readSamples(AudioBuffer& buffer, size_t numSamples,
             if (packetCount <= 50) {
                 DEBUG_LOG("[AudioDecoder] 📦 Processing packet #" << packetCount 
                           << ", size=" << dataSize << " bytes"
-                          << ", need=" << (totalBytesNeeded - totalBytesRead) << " bytes more" << std::endl;
+                          << ", need=" << (totalBytesNeeded - totalBytesRead) << " bytes more");
             }
             
             // Process this packet
@@ -523,7 +523,7 @@ size_t AudioDecoder::readSamples(AudioBuffer& buffer, size_t numSamples,
             if (packetCount <= 15) {
                 DEBUG_LOG("[AudioDecoder] Packet #" << packetCount 
                           << ": used " << std::min(dataSize, bytesNeeded) << " bytes"
-                          << " (total: " << totalBytesRead << "/" << totalBytesNeeded << ")" << std::endl;
+                          << " (total: " << totalBytesRead << "/" << totalBytesNeeded << ")");
             }
         }
         
@@ -1387,12 +1387,12 @@ bool AudioEngine::preloadNextTrack() {
                   << m_currentTrackInfo.sampleRate << "Hz/"
                   << m_currentTrackInfo.bitDepth << "bit/"
                   << m_currentTrackInfo.channels << "ch"
-                  << (m_currentTrackInfo.isDSD ? " (DSD)" : "") << std::endl;
+                  << (m_currentTrackInfo.isDSD ? " (DSD)" : ""));
         DEBUG_LOG("[AudioEngine] Next: "
                   << nextInfo.sampleRate << "Hz/"
                   << nextInfo.bitDepth << "bit/"
                   << nextInfo.channels << "ch"
-                  << (nextInfo.isDSD ? " (DSD)" : "") << std::endl;
+                  << (nextInfo.isDSD ? " (DSD)" : ""));
 
         // Don't keep nextDecoder - force stop/start sequence
         m_nextDecoder.reset();
@@ -1402,7 +1402,7 @@ bool AudioEngine::preloadNextTrack() {
     }
 
     DEBUG_LOG("[AudioEngine] ✓ Next track preloaded: "
-              << m_nextDecoder->getTrackInfo().codec << std::endl;
+              << m_nextDecoder->getTrackInfo().codec);
 
     return true;
 }
@@ -1519,7 +1519,7 @@ bool AudioEngine::seek(double seconds) {
     m_isDraining = false;
     
     DEBUG_LOG("[AudioEngine] ✓ Position updated to " 
-              << m_samplesPlayed << " samples (" << seconds << "s)" << std::endl;
+              << m_samplesPlayed << " samples (" << seconds << "s)")
     
     return true;
 }
@@ -1562,7 +1562,7 @@ bool AudioEngine::seek(const std::string& timeStr) {
     double totalSeconds = hours * 3600.0 + minutes * 60.0 + seconds;
     
     DEBUG_LOG("[AudioEngine] Parsed time: " << timeStr 
-              << " = " << totalSeconds << " seconds" << std::endl;
+              << " = " << totalSeconds << " seconds")
     
     return seek(totalSeconds);
  }

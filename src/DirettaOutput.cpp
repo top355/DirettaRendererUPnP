@@ -9,6 +9,9 @@
 #include <thread>
 #include <chrono>
 
+extern bool g_verbose;
+#define DEBUG_LOG(x) if (g_verbose) { std::cout << x << std::endl; }
+
 DirettaOutput::DirettaOutput()
     : m_mtu(1500)
     , m_mtuManuallySet(false)
@@ -32,7 +35,7 @@ void DirettaOutput::setMTU(uint32_t mtu) {
     m_mtu = mtu;
     m_mtuManuallySet = true;
     
-    DEBUG_LOG("[DirettaOutput] ✓ MTU configured: " << m_mtu << " bytes";
+    DEBUG_LOG("[DirettaOutput] ✓ MTU configured: " << m_mtu << " bytes");
     
     if (mtu > 1500) {
         std::cout << " (jumbo frames)";
@@ -47,7 +50,7 @@ bool DirettaOutput::open(const AudioFormat& format, int bufferSeconds) {
     DEBUG_LOG("[DirettaOutput] Opening: " 
               << format.sampleRate << "Hz/" 
               << format.bitDepth << "bit/" 
-              << format.channels << "ch" << std::endl;
+              << format.channels << "ch");
     
     m_currentFormat = format;
     m_totalSamplesSent = 0;
@@ -75,7 +78,7 @@ bool DirettaOutput::open(const AudioFormat& format, int bufferSeconds) {
         effectiveBuffer = std::min(static_cast<float>(bufferSeconds), 0.8f);
         DEBUG_LOG("[DirettaOutput] ✓ Uncompressed PCM (WAV/AIFF): low-latency path");
         DEBUG_LOG("[DirettaOutput]   Buffer: " << effectiveBuffer 
-                  << "s (similar to DSD!)" << std::endl;
+                  << "s (similar to DSD!)");
         
     } else {
         // FLAC/ALAC/etc: Compressed, needs decoding buffer
@@ -386,7 +389,7 @@ bool DirettaOutput::sendAudio(const uint8_t* data, size_t numSamples) {
         static int debugCount = 0;
         if (debugCount++ < 3) {
             DEBUG_LOG("[DirettaOutput::sendAudio] DSD: " << numSamples 
-                      << " samples → " << dataSize << " bytes" << std::endl;
+                      << " samples → " << dataSize << " bytes");
         }
     } else {
         // ✅ PCM: Calculate based on ACTUAL format (not what we'll send)
@@ -437,7 +440,7 @@ if (!m_currentFormat.isDSD && m_currentFormat.bitDepth == 24) {
     if (++callCount % 500 == 0) {
         double seconds = static_cast<double>(m_totalSamplesSent) / m_currentFormat.sampleRate;
         DEBUG_LOG("[DirettaOutput] Position: " << seconds << "s (" 
-                  << m_totalSamplesSent << " samples)" << std::endl;
+                  << m_totalSamplesSent << " samples)");
     }
 
         
@@ -591,7 +594,7 @@ bool DirettaOutput::findAndSelectTarget(int targetIndex) {
     DEBUG_LOG("[DirettaOutput] Measuring network MTU...");
     
     if (find.measSendMTU(m_targetAddress, measuredMTU)) {
-        DEBUG_LOG("[DirettaOutput] 📊 Physical MTU measured: " << measuredMTU << " bytes";
+        DEBUG_LOG("[DirettaOutput] 📊 Physical MTU measured: " << measuredMTU << " bytes");
         
         if (measuredMTU >= 9000) {
             std::cout << " (Jumbo frames enabled! ✓)";
@@ -801,7 +804,7 @@ bool DirettaOutput::verifyTargetAvailable() {
         for (const auto& targetPair : targets) {
             const auto& targetInfo = targetPair.second;
             DEBUG_LOG("[DirettaOutput] Target #" << targetNum << ": " 
-          << targetInfo.targetName << std::endl;
+          << targetInfo.targetName);
             targetNum++;
         }
         std::cout << "[DirettaOutput] " << std::endl;
@@ -821,7 +824,7 @@ bool DirettaOutput::verifyTargetAvailable() {
             const auto& targetInfo = it->second;
             
             DEBUG_LOG("[DirettaOutput] ✓ Will use target #" << (m_targetIndex + 1) 
-          << " (" << targetInfo.targetName << ")" << std::endl;
+          << " (" << targetInfo.targetName << ")" );
             std::cout << "[DirettaOutput] " << std::endl;
         } else if (targets.size() > 1) {
             std::cout << "[DirettaOutput] 💡 Multiple targets detected. Interactive selection will be used." << std::endl;
@@ -864,7 +867,7 @@ if (format.dsdFormat == AudioFormat::DSDFormat::DFF) {
 }
         
         DEBUG_LOG("[DirettaOutput]    Word size: 32-bit container");
-        DEBUG_LOG("[DirettaOutput]    DSD Rate: ";
+        DEBUG_LOG("[DirettaOutput]    DSD Rate: ");
         
         // Determine DSD rate (DSD64, DSD128, etc.)
         // DSD rates are based on 44.1kHz × 64/128/256/512
@@ -965,7 +968,7 @@ if (format.dsdFormat == AudioFormat::DSDFormat::DFF) {
     DEBUG_LOG("[DirettaOutput] 3. Format negotiation with Target...");
     
     // Try to configure the requested format
-    DEBUG_LOG("[DirettaOutput]    Requesting format: ";
+    DEBUG_LOG("[DirettaOutput]    Requesting format: ");
     if (format.isDSD) {
         std::cout << "DSD" << (format.sampleRate / 44100) << " (" << format.sampleRate << "Hz)";
     } else {
@@ -1028,7 +1031,7 @@ if (isLowBitrate) {
 } else {
     // Pour Hi-Res (24bit, 88.2k+, DSD, etc.) : jumbo frames pour performance max
     DEBUG_LOG("[DirettaOutput] ✓ Hi-Res format (" 
-              << format.bitDepth << "bit/" << format.sampleRate << "Hz)" << std::endl;
+              << format.bitDepth << "bit/" << format.sampleRate << "Hz)");
     DEBUG_LOG("[DirettaOutput] Using configTransferVarMax (jumbo frames)");
     
     m_syncBuffer->configTransferVarMax(
@@ -1061,9 +1064,9 @@ DEBUG_LOG("[DirettaOutput]      - Bytes per sample: " << bytesPerSample);
 DEBUG_LOG("[DirettaOutput]      - Frame size: " << frameSize << " bytes");
 DEBUG_LOG("[DirettaOutput]      - Frames per second: " << fs1sec);
 DEBUG_LOG("[DirettaOutput]      - Buffer: " << fs1sec << " × " << m_bufferSeconds 
-          << " = " << (fs1sec * m_bufferSeconds) << " frames" << std::endl;
+          << " = " << (fs1sec * m_bufferSeconds) << " frames");
 DEBUG_LOG("[DirettaOutput]      ⚠️  CRITICAL: This is " << m_bufferSeconds 
-          << " seconds of audio buffer in Diretta!" << std::endl;
+          << " seconds of audio buffer in Diretta!");
 
 m_syncBuffer->setupBuffer(fs1sec * m_bufferSeconds, 4, false);
     DEBUG_LOG("[DirettaOutput] 6. Connecting...");
@@ -1087,7 +1090,7 @@ m_syncBuffer->setupBuffer(fs1sec * m_bufferSeconds, 4, false);
     }
     
     DEBUG_LOG("[DirettaOutput] ✓ Connected: " << format.sampleRate 
-              << "Hz/" << format.bitDepth << "bit/" << format.channels << "ch" << std::endl;
+              << "Hz/" << format.bitDepth << "bit/" << format.channels << "ch");
     
     return true;
 }
