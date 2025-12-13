@@ -577,7 +577,7 @@ void DirettaRenderer::upnpThreadFunc() {
 
 void DirettaRenderer::audioThreadFunc() {
     DEBUG_LOG("[Audio Thread] Started");
-    DEBU_LOG("[Audio Thread] ⏱️  Precise timing enabled")
+    DEBUG_LOG("[Audio Thread] ⏱️  Precise timing enabled")
     
     // ✅ CRITICAL: Packet size must be adapted to format!
     // DSD:  32768 samples (matches Diretta processing quantum, ~11.6ms)
