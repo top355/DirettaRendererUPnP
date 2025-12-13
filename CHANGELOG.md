@@ -27,7 +27,10 @@ Command Line Options
 
 - Added --verbose / -v flag to enable detailed debug output
 - Added --help documentation for the new verbose mode
-
+**Version Display**
+- Added version display 
+  ./DirettaRenderer --version or ./DirettaRendererUPnP -V
+  
 ### Fixed
 - Removed clicks or pink noise bursts at the end of the album or during the transition between tracks in a playlist
  * Buffers weren't correctly cleared at the en of an album or during a format change.
