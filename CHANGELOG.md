@@ -41,19 +41,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Example: 0.8s buffer → cast to int → 0 seconds!
 - Result: Buffer underruns, audio artifacts (pink noise)
 
-**Example of Bug:**
-```cpp
-// BEFORE (v1.0.8):
-int m_bufferSeconds;
-effectiveBuffer = std::min(0.8f, bufferSeconds);  // Returns 0.8f
-m_bufferSeconds = effectiveBuffer;  // Cast to int = 0 ❌
-
-// AFTER (v1.0.9):
-float m_bufferSeconds;
-effectiveBuffer = std::min(0.8f, bufferSeconds);  // Returns 0.8f
-m_bufferSeconds = effectiveBuffer;  // Keeps 0.8f ✅
-```
-
 **Tested:**
 - ✅ DSD with 0.8s buffer works correctly
 - ✅ PCM with 1.2s buffer works correctly
