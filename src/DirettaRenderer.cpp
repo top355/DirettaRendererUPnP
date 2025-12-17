@@ -265,27 +265,67 @@ m_audioEngine->setAudioCallback(
         // ⭐ Open connection if needed
         // ═══════════════════════════════════════════════════════════════
         
-        if (!m_direttaOutput->isConnected()) {
+        if (!m_direttaOutput->isConnected() || needReopen) {
             auto initStart = std::chrono::steady_clock::now();
+            
+            // ⭐⭐⭐ CRITICAL FIX: Determine if we need to wait for Target
+            bool wasConnected = hasLastFormat;  // If we had a previous format, we were connected before
+            bool needsTargetReset = wasConnected && !m_direttaOutput->isConnected();
             
             if (formatChanged) {
                 std::cout << "[Callback] 🔌 Opening Diretta with NEW format after change..." << std::endl;
+                std::cout << "[Callback]    Old: " << lastFormat.sampleRate << "Hz/" 
+                          << lastFormat.bitDepth << "bit/" << lastFormat.channels << "ch" << std::endl;
+                std::cout << "[Callback]    New: " << sampleRate << "Hz/" 
+                          << bitDepth << "bit/" << channels << "ch" << std::endl;
                 
-                // ⭐⭐⭐ CRITICAL FIX: Wait for Target to reinitialize ⭐⭐⭐
-                // After close(), the Target Diretta needs time to reset its DAC
-                // Without this pause, the Target stays locked on the old format!
+                // Wait for Target to reinitialize after format change
                 std::cout << "[Callback] ⏳ Waiting for Target reinitialization (500ms)..." << std::endl;
                 std::this_thread::sleep_for(std::chrono::milliseconds(500));
-                std::cout << "[Callback] ✓ Target should be ready for new format" << std::endl;
+                std::cout << "[Callback] ✓ Target ready for new format" << std::endl;
+                
+            } else if (needsTargetReset) {
+                // ⭐⭐⭐ NEW: Also wait when reopening with SAME format
+                // After close(), the Target needs time to reset even if format unchanged
+                std::cout << "[Callback] 🔌 Reopening Diretta connection (same format: " 
+                          << sampleRate << "Hz/" << bitDepth << "bit/" << channels << "ch)" << std::endl;
+                std::cout << "[Callback] ⏳ Waiting for Target reset (300ms)..." << std::endl;
+                std::this_thread::sleep_for(std::chrono::milliseconds(300));
+                std::cout << "[Callback] ✓ Target ready for reconnection" << std::endl;
+                
             } else {
+                // First connection ever
                 DEBUG_LOG("[Callback] 🔌 First audio buffer received, initializing Diretta...");
             }
             
             DEBUG_LOG("[Callback]    Format: " << sampleRate << "Hz/" << bitDepth << "bit/" << channels << "ch");
             
+            // Open Diretta connection
+            AudioFormat format(sampleRate, bitDepth, channels);
+            
+            // ⭐ Propagate compression info for buffer optimization
+            format.isCompressed = trackInfo.isCompressed;
+            
+            // ⭐ Configure DSD if needed
+            if (trackInfo.isDSD) {
+                format.isDSD = true;
+                format.bitDepth = 1;  // DSD = 1 bit
+                format.sampleRate = sampleRate;
+                
+                // Determine DSD format from codec
+                std::string codec = trackInfo.codec;
+                if (codec.find("lsb") != std::string::npos) {
+                    format.dsdFormat = AudioFormat::DSDFormat::DSF;
+                    DEBUG_LOG("[DirettaRenderer] 🎵 DSD format: DSF (LSB)");
+                } else {
+                    format.dsdFormat = AudioFormat::DSDFormat::DFF;
+                    DEBUG_LOG("[DirettaRenderer] 🎵 DSD format: DFF (MSB)");
+                }
+            }
+            
             if (g_verbose) {
                 std::cout << "[DirettaRenderer] 🔌 Opening Diretta connection: ";
-                if (currentFormat.isDSD) {
+                if (format.isDSD) {
                     std::cout << "DSD" << trackInfo.dsdRate << " (" << sampleRate << " Hz)";
                 } else {
                     std::cout << sampleRate << "Hz/" << bitDepth << "bit";
@@ -293,7 +333,7 @@ m_audioEngine->setAudioCallback(
                 std::cout << "/" << channels << "ch" << std::endl;
             }
             
-            if (!m_direttaOutput->open(currentFormat, m_config.bufferSeconds)) {
+            if (!m_direttaOutput->open(format, m_config.bufferSeconds)) {
                 std::cerr << "[DirettaRenderer] ❌ Failed to open Diretta output" << std::endl;
                 return false;
             }
@@ -313,21 +353,19 @@ m_audioEngine->setAudioCallback(
             
             auto totalTime = std::chrono::steady_clock::now();
             auto totalDuration = std::chrono::duration_cast<std::chrono::milliseconds>(totalTime - initStart);
-            std::cout << "[DirettaRenderer] ✓ Ready to play (total init: " << totalDuration.count() << "ms)" << std::endl;
+            std::cout << "[DirettaRenderer] ✅ Ready to stream (total init: " << totalDuration.count() << "ms)" << std::endl;
             
             if (formatChanged) {
-                std::cout << "[Callback] ✅ Format change via reopen completed!" << std::endl;
-                std::cout << "[Callback] 💡 DAC should now be locked to " << sampleRate << "Hz" << std::endl;
-                std::cout << "════════════════════════════════════════" << std::endl;
+                std::cout << "[Callback] ✅ Format change completed!" << std::endl;
+                std::cout << "[Callback] 💡 DAC locked to " << sampleRate << "Hz" << std::endl;
+            } else if (needsTargetReset) {
+                std::cout << "[Callback] ✅ Reconnection completed!" << std::endl;
             }
+            
+            // ⭐ Save format for next comparison
+            lastFormat = format;
+            hasLastFormat = true;
         }
-        
-        // ═══════════════════════════════════════════════════════════════
-        // ⭐ Update last format for next comparison
-        // ═══════════════════════════════════════════════════════════════
-        
-        lastFormat = currentFormat;
-        hasLastFormat = true;
         
         // ═══════════════════════════════════════════════════════════════
         // ⭐ Send audio data
