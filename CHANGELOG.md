@@ -17,7 +17,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 ## [1.0.7]
-### 🎵 Audirvana Compatibility Fix
+
+### Add
+ - DSD512 and DSD1024 support added thanks to norman-arch
+### 🎵 Audirvana Compatibility Fix (In progress not perfect)
 
 **Problem:**
 - Audirvana pre-decodes audio and wraps it in a strange format
@@ -109,7 +112,7 @@ Reduced log spam when `process()` returns false
   - Now logs only every 100 consecutive failures instead of every occurrence
   - Prevents multi-gigabyte log files during idle states
   - Added consecutive failure counter for better debugging visibility
-
+- **Improved Roon + Squeeze2UPnP compatibility** Thanks to herisson-88
 ### Technical Details
 
 - Format change detection now works in two scenarios:
