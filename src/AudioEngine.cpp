@@ -456,14 +456,11 @@ size_t AudioDecoder::readSamples(AudioBuffer& buffer, size_t numSamples,
     // DSD NATIVE MODE - Read raw packets without decoding
     // ══════════════════════════════════════════════════════════════
     if (m_rawDSD) {
-        static int callCount = 0;
-        callCount++;
-        
-        if (callCount <= 20 || callCount % 100 == 0) {
-            DEBUG_LOG("[AudioDecoder::readSamples] Call #" << callCount 
-                      << ", requested=" << numSamples << " samples"
-                      << ", remaining=" << m_remainingCount << " bytes");
-        }
+        static int m_readCallCount = 0;
+        m_readCallCount++;
+    if (m_readCallCount % 100 == 0) {
+        DEBUG_LOG("[readSamples] Call " << m_readCallCount);
+}
         
         if (m_eof) {
             DEBUG_LOG("[AudioDecoder::readSamples] EOF flag set, returning 0");
@@ -526,16 +523,15 @@ size_t AudioDecoder::readSamples(AudioBuffer& buffer, size_t numSamples,
             size_t dataSize = m_packet->size;
             
             // Debug: count packets
-            static int packetCount = 0;
-            packetCount++;
+            // Removed static variable - now m_packetCount (instance member)
+               m_packetCount++;
             
             // ⚠️  TEST: DON'T skip any packets - all contain audio data
             /*
-            if (packetCount <= 10) {
-                static bool warningShown = false;
-                if (!warningShown) {
+            if (m_packetCount <= 10) {
+                if (!m_dsdWarningShown) {
                     DEBUG_LOG("[AudioDecoder] ⚠️  Skipping first 10 packets (header/padding)");
-                    warningShown = true;
+                    m_dsdWarningShown = true;
                 }
                 av_packet_unref(m_packet);
                 continue;
@@ -543,8 +539,8 @@ size_t AudioDecoder::readSamples(AudioBuffer& buffer, size_t numSamples,
             */
             
             // DEBUG: Always log packet processing
-            if (packetCount <= 50) {
-                DEBUG_LOG("[AudioDecoder] 📦 Processing packet #" << packetCount 
+            if (m_packetCount <= 50) {
+                DEBUG_LOG("[AudioDecoder] 📦 Processing packet #" << m_packetCount 
                           << ", size=" << dataSize << " bytes"
                           << ", need=" << (totalBytesNeeded - totalBytesRead) << " bytes more");
             }
@@ -576,8 +572,8 @@ size_t AudioDecoder::readSamples(AudioBuffer& buffer, size_t numSamples,
             av_packet_unref(m_packet);
             
             // Debug first few times
-            if (packetCount <= 15) {
-                DEBUG_LOG("[AudioDecoder] Packet #" << packetCount 
+            if (m_packetCount <= 15) {
+                DEBUG_LOG("[AudioDecoder] Packet #" << m_packetCount 
                           << ": used " << std::min(dataSize, bytesNeeded) << " bytes"
                           << " (total: " << totalBytesRead << "/" << totalBytesNeeded << ")");
             }
@@ -609,11 +605,10 @@ size_t AudioDecoder::readSamples(AudioBuffer& buffer, size_t numSamples,
                     dst[i * 2]     = src[i];                     // Left byte
                     dst[i * 2 + 1] = src[bytesPerChannel + i];   // Right byte
                 }
-                
-                static bool interleavingLogged = false;
-                if (!interleavingLogged) {
+            
+                if (!m_interleavingLoggedDOP) {
                     DEBUG_LOG("[AudioDecoder] 🔄 PLANAR → INTERLEAVED (byte-by-byte)");
-                    interleavingLogged = true;
+                    m_interleavingLoggedDOP = true;
                 }
             } else {
                 // ✅ WORKING: Interleave by 32-bit WORDS
@@ -626,11 +621,9 @@ size_t AudioDecoder::readSamples(AudioBuffer& buffer, size_t numSamples,
                     dst[i * 2]     = src[i];                      // Left word
                     dst[i * 2 + 1] = src[wordsPerChannel + i];    // Right word
                 }
-                
-                static bool interleavingLogged = false;
-                if (!interleavingLogged) {
+                if (!m_interleavingLoggedNative) {
                     DEBUG_LOG("[AudioDecoder] ✅ PLANAR → INTERLEAVED (32-bit words)");
-                    interleavingLogged = true;
+                    m_interleavingLoggedNative = true;
                 }
             }
         }
@@ -638,8 +631,7 @@ size_t AudioDecoder::readSamples(AudioBuffer& buffer, size_t numSamples,
 
     // ✅ DEBUG: Dump first 64 bytes to understand Audirvana's format
     if (g_verbose) {
-        static bool dumped = false;
-    if (!dumped && totalBytesRead >= 64) {
+    if (!m_dumpedFirstPacket && totalBytesRead >= 64) {
         std::cout << "\n[DEBUG] First 64 bytes from Audirvana DFF:" << std::endl;
         std::cout << "[DEBUG] Hex dump:" << std::endl;
         
@@ -653,7 +645,7 @@ size_t AudioDecoder::readSamples(AudioBuffer& buffer, size_t numSamples,
         std::cout << "[DEBUG] Sample rate: " << m_trackInfo.sampleRate << std::endl;
         std::cout << "[DEBUG] Channels: " << m_trackInfo.channels << std::endl;
         
-        dumped = true;
+        m_dumpedFirstPacket = true;
     }
     }
 
@@ -694,18 +686,17 @@ size_t AudioDecoder::readSamples(AudioBuffer& buffer, size_t numSamples,
         for (size_t i = 0; i < totalBytesRead; i++) {
             data[i] = bitReverseTable[data[i]];
         }
-        
-        static bool logged = false;
-        if (!logged) {
+    
+        if (!m_bitReversalLogged) {
             std::cout << "[AudioDecoder] 🔄 DFF: Bit reversal ONLY (MSB→LSB, keep LE)" << std::endl;
-            logged = true;
+            m_bitReversalLogged = true;
         }
       }else if (isAudirvana) {
-    static bool logged = false;
-    if (!logged) {
+
+        if (!m_resamplingLogged) {
         std::cout << "[AudioDecoder] ⚠️  Audirvana detected: Skipping bit reversal" << std::endl;
         std::cout << "[AudioDecoder]     (DSF data with .dff URL - already LSB)" << std::endl;
-        logged = true;
+        m_resamplingLogged = true;
       }    
     }
         return (totalBytesRead * 8) / m_trackInfo.channels;
@@ -921,12 +912,11 @@ if (m_trackInfo.isDSD) {
                                    tempBuffer.data() + bytesToUse,
                                    excessBytes);
                             m_remainingCount = excess;
-                            
-                            static bool loggedOnce = false;
-                            if (!loggedOnce) {
+                        
+                            if (!m_resamplerInitLogged) {
                                 std::cout << "[AudioDecoder] ✅ Buffering " << excess 
                                           << " excess samples for next read" << std::endl;
-                                loggedOnce = true;
+                                m_resamplerInitLogged = true;
                             }
                         }
                     }
