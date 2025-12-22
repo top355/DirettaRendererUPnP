@@ -37,6 +37,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Fixes: mConnect, BubbleUPnP, and other control points no longer freeze on seek
   - Impact: Seek now works reliably across all UPnP control points
 
+- **Refactor Makefile**
+  - proper ARCH_NAME/VARIANT handling, unified auto-detection (Thanks to udosan174)
+
 ### Technical Details
 
 - Added atomic members `m_seekRequested` and `m_seekTarget` to AudioEngine
