@@ -147,7 +147,8 @@ bool DirettaRenderer::start() {
         upnpConfig.modelName = "Diretta UPnP Renderer";
         upnpConfig.uuid = m_config.uuid;
         upnpConfig.port = m_config.port;
-
+        upnpConfig.networkInterface = m_config.networkInterface;
+        
         m_upnp = std::make_unique<UPnPDevice>(upnpConfig);        
         
         m_audioEngine = std::make_unique<AudioEngine>();
