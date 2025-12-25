@@ -8,7 +8,7 @@
 
 ---
 
-![Version](https://img.shields.io/badge/version-1.0.9-blue.svg)
+![Version](https://img.shields.io/badge/version-1.1.1-blue.svg)
 ![Multi-Interface](https://img.shields.io/badge/multi--interface-supported-green.svg) ← NEW
 
 ---
@@ -294,8 +294,10 @@ git pull
 make clean
 make  or make NOLOG=1 if you want production version (better SQ has been reported)
 
-# Before installing service (if updating to version 1.0.9 - settings will be lost)
- sudo rm /opt/diretta-renderer-upnp/diretta-renderer.conf
+# Before installing service (if updating to version 1.0.9 - settings will be lost - not needed if you update from v1.1.0 to v1.1.1)
+sudo rm /opt/diretta-renderer-upnp/diretta-renderer.conf
+
+sudo systemctl stop diretta-renderer
 
 # Install service
 cd systemd
@@ -1011,4 +1013,4 @@ This software is provided "as is" without warranty. While designed for high-qual
 
 **Enjoy bit-perfect, high-resolution audio streaming! 🎵**
 
-*Last updated: 2025-12-18*
+*Last updated: 2025-12-25*
