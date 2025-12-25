@@ -1696,14 +1696,14 @@ bool AudioEngine::seek(const std::string& timeStr) {
     double totalSeconds = hours * 3600.0 + minutes * 60.0 + seconds;
     
     DEBUG_LOG("[AudioEngine] Parsed time: " << timeStr 
-              << " = " << totalSeconds << " seconds")
+              << " = " << totalSeconds << " seconds");
     
     return seek(totalSeconds);
  }
 
 uint32_t AudioEngine::getCurrentSampleRate() const {
     return m_currentTrackInfo.sampleRate;
-
+}
 // ═══════════════════════════════════════════════════════════════
 // ⭐ v1.2.0: Gapless Pro - Prepare next track for gapless
 // ═══════════════════════════════════════════════════════════════
