@@ -88,7 +88,7 @@ bool AudioDecoder::open(const std::string& url) {
     av_dict_set(&options, "timeout", "10000000", 0);  // 10 seconds in microseconds
     
     // Improved network buffering
-    av_dict_set(&options, "buffer_size", "262144", 0);  // 32KB buffer
+    av_dict_set(&options, "buffer_size", "32768", 0);  // 32KB buffer
     
     // HTTP persistent connections
     av_dict_set(&options, "http_persistent", "1", 0);
@@ -1298,23 +1298,9 @@ bool AudioEngine::process(size_t samplesNeeded) {
         std::cout << "[AudioEngine] Pending next URI applied (gapless)" << std::endl;
     }
 
-    // Safety net: auto-reopen if decoder null while PLAYING
+    // ✅ TEST 2: v1.0.6 behavior - simple check without auto-reopen
     if (!m_currentDecoder) {
-        if (!m_currentURI.empty()) {
-            if (!openCurrentTrack()) {
-                std::cerr << "[AudioEngine] Failed to reopen track" << std::endl;
-                m_state = State::STOPPED;
-                if (m_trackEndCallback) {
-                    m_trackEndCallback();
-                }
-                return false;
-            }
-            m_samplesPlayed = 0;
-            m_silenceCount = 0;
-            m_isDraining = false;
-        } else {
-            return false;
-        }
+        return false;
     }
 
     // Determine output format
