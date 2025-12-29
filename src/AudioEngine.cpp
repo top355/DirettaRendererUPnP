@@ -456,9 +456,10 @@ size_t AudioDecoder::readSamples(AudioBuffer& buffer, size_t numSamples,
     // DSD NATIVE MODE - Read raw packets without decoding
     // ══════════════════════════════════════════════════════════════
     if (m_rawDSD) {
-        m_readCallCount++;
-    if (m_readCallCount % 100 == 0) {
-        DEBUG_LOG("[readSamples] Call " << m_readCallCount);
+        static int callCount = 0;  // ✅ TEST 1: Restored static
+        callCount++;
+    if (callCount % 100 == 0) {
+        DEBUG_LOG("[readSamples] Call " << callCount);
 }
         
         if (m_eof) {
@@ -522,15 +523,16 @@ size_t AudioDecoder::readSamples(AudioBuffer& buffer, size_t numSamples,
             size_t dataSize = m_packet->size;
             
             // Debug: count packets
-            // Removed static variable - now m_packetCount (instance member)
-               m_packetCount++;
+            static int packetCount = 0;  // ✅ TEST 1: Restored static
+            packetCount++;
             
             // ⚠️  TEST: DON'T skip any packets - all contain audio data
             /*
-            if (m_packetCount <= 10) {
-                if (!m_dsdWarningShown) {
+            if (packetCount <= 10) {
+                static bool warningShown = false;  // ✅ TEST 1: Restored static
+                if (!warningShown) {
                     DEBUG_LOG("[AudioDecoder] ⚠️  Skipping first 10 packets (header/padding)");
-                    m_dsdWarningShown = true;
+                    warningShown = true;
                 }
                 av_packet_unref(m_packet);
                 continue;
@@ -538,8 +540,8 @@ size_t AudioDecoder::readSamples(AudioBuffer& buffer, size_t numSamples,
             */
             
             // DEBUG: Always log packet processing
-            if (m_packetCount <= 50) {
-                DEBUG_LOG("[AudioDecoder] 📦 Processing packet #" << m_packetCount 
+            if (packetCount <= 50) {
+                DEBUG_LOG("[AudioDecoder] 📦 Processing packet #" << packetCount 
                           << ", size=" << dataSize << " bytes"
                           << ", need=" << (totalBytesNeeded - totalBytesRead) << " bytes more");
             }
@@ -1298,9 +1300,23 @@ bool AudioEngine::process(size_t samplesNeeded) {
         std::cout << "[AudioEngine] Pending next URI applied (gapless)" << std::endl;
     }
 
-    // ✅ TEST 2: v1.0.6 behavior - simple check without auto-reopen
+    // Safety net: auto-reopen if decoder null while PLAYING
     if (!m_currentDecoder) {
-        return false;
+        if (!m_currentURI.empty()) {
+            if (!openCurrentTrack()) {
+                std::cerr << "[AudioEngine] Failed to reopen track" << std::endl;
+                m_state = State::STOPPED;
+                if (m_trackEndCallback) {
+                    m_trackEndCallback();
+                }
+                return false;
+            }
+            m_samplesPlayed = 0;
+            m_silenceCount = 0;
+            m_isDraining = false;
+        } else {
+            return false;
+        }
     }
 
     // Determine output format
