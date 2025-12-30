@@ -57,7 +57,7 @@ void DirettaOutput::setMTU(uint32_t mtu) {
 
 
 
-bool DirettaOutput::open(const AudioFormat& format, float bufferSeconds) {
+bool DirettaOutput::open(const AudioFormat& format, int bufferSeconds) {
     DEBUG_LOG("[DirettaOutput] Opening: " 
               << format.sampleRate << "Hz/" 
               << format.bitDepth << "bit/" 
@@ -79,7 +79,7 @@ bool DirettaOutput::open(const AudioFormat& format, float bufferSeconds) {
     
     float effectiveBuffer;
     
-if (format.isDSD) {
+    if (format.isDSD) {
         // DSD: Raw bitstream, zero decode overhead
         effectiveBuffer = std::min(static_cast<float>(bufferSeconds), 0.8f);
         DEBUG_LOG("[DirettaOutput] 🎵 DSD: raw bitstream path");
@@ -334,7 +334,7 @@ bool DirettaOutput::changeFormat(const AudioFormat& newFormat) {
         
         // ⭐ STEP 2: WAIT FOR ALL QUEUED BUFFERS TO BE PLAYED
         std::cout << "[DirettaOutput] 2. Draining queued buffers..." << std::endl;
-        int drain_timeout_ms = 100;  // 10 seconds max for drain
+        int drain_timeout_ms = 10000;  // 10 seconds max for drain
         int drain_waited_ms = 0;
         
         // Get initial buffer count
