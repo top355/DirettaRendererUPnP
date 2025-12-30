@@ -91,8 +91,7 @@ bool DirettaOutput::open(const AudioFormat& format, float bufferSeconds) {
         DEBUG_LOG("[DirettaOutput] ✓ Uncompressed PCM (WAV/AIFF): low-latency path");
         DEBUG_LOG("[DirettaOutput]   Buffer: " << effectiveBuffer 
                   << "s (similar to DSD!)");
-        }
-        
+                
     } else {
         // FLAC/ALAC/etc: Compressed, needs decoding buffer
         effectiveBuffer = std::max(bufferSeconds, 0.8f);
@@ -105,7 +104,7 @@ bool DirettaOutput::open(const AudioFormat& format, float bufferSeconds) {
     
     m_bufferSeconds = effectiveBuffer;
     DEBUG_LOG("[DirettaOutput] → Effective buffer: " << m_bufferSeconds << "s");
-    
+
     // Find Diretta target
     DEBUG_LOG("[DirettaOutput] Finding Diretta target...");
     if (!findAndSelectTarget(m_targetIndex)) {  // Use configured target index
