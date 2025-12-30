@@ -11,17 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.1.2] - 2025-12-29
 
 ### Fixed
-### **setURI Race Condition on Format Changes**
-**Symptom in v1.1.1:**
-- Crash or erratic behavior on mixed-format playlists
-- Example: 44.1kHz/16bit → 96kHz/24bit → 192kHz/24bit → DSD64
-- Intermittent issue (timing-dependent)
-**Problem:**
-- Between lock/unlock/re-lock, state can change
-- Other threads can modify state during waitForCallbackComplete()
-- Rapid format changes create race condition
-
-## Solution in v1.1.2
+Some bugs correction
+DSD files playback after a delay of 1 mnminute 40.
 **Simplified structure - mutex held throughout callback:**
 
 ## [1.1.1] - 2025-12-25
