@@ -1624,6 +1624,46 @@ bool AudioDecoder::seek(double seconds) {
 }
 
 // ============================================================================
+// AudioEngine::seek() - Seek avec mise à jour de la position
+// ============================================================================
+
+bool AudioEngine::seek(double seconds) {
+    // ⭐⭐⭐ CRITICAL FIX: Async seek to avoid deadlock
+    // The UPnP thread calling this should not block waiting for mutex
+    // Instead, we set atomic flags and let the audio thread handle the seek
+    
+    std::cout << "[AudioEngine] ⏩ Seek requested to " << seconds << " seconds (async)" << std::endl;
+    
+    // Quick validation without mutex
+    if (m_state.load(std::memory_order_acquire) != State::PLAYING) {
+        std::cerr << "[AudioEngine] ❌ Cannot seek when not playing" << std::endl;
+        return false;
+    }
+    
+    // Clamp to valid range (optimistic check, will be validated in audio thread)
+    const TrackInfo& info = m_currentTrackInfo;
+    if (info.sampleRate > 0 && info.duration > 0) {
+        double maxSeconds = static_cast<double>(info.duration) / info.sampleRate;
+        if (seconds < 0) {
+            seconds = 0;
+        }
+        if (seconds > maxSeconds) {
+            DEBUG_LOG("[AudioEngine] Seek position clamped to " << maxSeconds << "s");
+            seconds = maxSeconds;
+        }
+    }
+    
+    // ⭐ Set seek request atomically (lock-free, non-blocking)
+    m_seekTarget.store(seconds, std::memory_order_release);
+    m_seekRequested.store(true, std::memory_order_release);
+    
+    std::cout << "[AudioEngine] ✓ Seek queued, will be processed by audio thread" << std::endl;
+    
+    // Return immediately - UPnP thread doesn't wait
+    return true;
+}
+
+// ============================================================================
 // AudioEngine::seek() - Version avec string "HH:MM:SS"
 // ============================================================================
 
