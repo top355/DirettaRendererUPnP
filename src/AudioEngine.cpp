@@ -1584,13 +1584,13 @@ bool AudioDecoder::seek(double seconds) {
         
         // Calculate byte position in DSD file
         // For DSD: sampleRate = bits per second per channel
-        int64_t bitsPerSecond = m_format.sampleRate * m_format.channels;
+        int64_t bitsPerSecond = m_trackInfo.sampleRate * m_trackInfo.channels;
         int64_t targetBit = static_cast<int64_t>(seconds * bitsPerSecond);
         int64_t targetByte = targetBit / 8;
         
         std::cout << "[AudioDecoder]   Target: " << targetByte << " bytes (" << targetBit << " bits)" << std::endl;
-        std::cout << "[AudioDecoder]   Format: " << m_format.sampleRate << " Hz, " 
-                  << m_format.channels << " channels" << std::endl;
+        std::cout << "[AudioDecoder]   Format: " << m_trackInfo.sampleRate << " Hz, " 
+                  << m_trackInfo.channels << " channels" << std::endl;
         
         // Seek in file using byte position
         AVIOContext* avio = m_formatContext->pb;
@@ -1658,6 +1658,7 @@ bool AudioDecoder::seek(double seconds) {
     
     return true;
 }
+
 
 // ============================================================================
 // AudioEngine::seek() - Seek avec mise à jour de la position
