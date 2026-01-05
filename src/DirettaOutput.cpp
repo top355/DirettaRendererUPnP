@@ -981,8 +981,10 @@ if (wasDSD) {
     std::vector<uint8_t> silenceBuffer(8192, 0x69);  // DSD silence = 0x69
     
     for (int i = 0; i < 100; i++) {
-        // Utiliser setStream directement (pas de Stream.set())
-        m_syncBuffer->setStream(silenceBuffer.data(), silenceBuffer.size());
+        DIRETTA::Stream stream;
+        stream.resize(silenceBuffer.size());
+        memcpy(stream.get(), silenceBuffer.data(), silenceBuffer.size());
+        m_syncBuffer->setStream(stream);
         
         // Petit délai tous les 10 buffers
         if (i % 10 == 0) {
@@ -1001,7 +1003,10 @@ if (wasDSD) {
     std::vector<uint8_t> silenceBuffer(4096, 0x00);  // PCM silence = 0x00
     
     for (int i = 0; i < 30; i++) {
-        m_syncBuffer->setStream(silenceBuffer.data(), silenceBuffer.size());
+        DIRETTA::Stream stream;
+        stream.resize(silenceBuffer.size());
+        memcpy(stream.get(), silenceBuffer.data(), silenceBuffer.size());
+        m_syncBuffer->setStream(stream);
         
         if (i % 10 == 0) {
             std::this_thread::sleep_for(std::chrono::milliseconds(5));
