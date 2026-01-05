@@ -1084,13 +1084,18 @@ bool DirettaOutput::configureDiretta(const AudioFormat& format) {
     // m_syncBuffer->connectWait();
 
 
-    // Wait with timeout
+// Wait with timeout
     int timeoutMs = 10000;
     int waitedMs = 0;
     while (!m_syncBuffer->is_connect() && waitedMs < timeoutMs) {
+        if (waitedMs % 500 == 0) {  // ← AJOUTE CETTE LIGNE
+            DEBUG_LOG("[DirettaOutput] ⚠️  Still waiting for connection... " << waitedMs << "ms");  // ← AJOUTE
+        }  // ← AJOUTE
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
         waitedMs += 100;
     }
+    
+    DEBUG_LOG("[DirettaOutput] ⭐ Exit wait loop, is_connect=" << m_syncBuffer->is_connect());  // ← AJOUTE
     
     if (!m_syncBuffer->is_connect()) {
         std::cerr << "[DirettaOutput] ❌ Connection failed" << std::endl;
