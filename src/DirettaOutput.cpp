@@ -1140,8 +1140,8 @@ m_syncBuffer->setupBuffer(fs1sec * m_bufferSeconds, 4, false);
               << "Hz/" << format.bitDepth << "bit/" << format.channels << "ch");
     
     return true;
-}
-}
+
+
 // ═══════════════════════════════════════════════════════════════
 // ⭐ v1.2.0 Stable: Network optimization by format
 // ═══════════════════════════════════════════════════════════════
