@@ -227,7 +227,7 @@ m_audioEngine->setAudioCallback(
                     DEBUG_LOG("[Callback] DSD format: DFF (MSB) - from codec fallback");
                 }
             }
-        
+        }
         // ═══════════════════════════════════════════════════════════════
         // ⭐ Format change detection (works EVEN after close())
         // ═══════════════════════════════════════════════════════════════
