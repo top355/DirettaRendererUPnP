@@ -62,6 +62,21 @@ public:
     
     /**
      * @brief Destructor
+/**
+ * @brief Diretta output handler
+ * 
+ * Manages connection to Diretta DAC and handles audio streaming
+ * using SyncBuffer for gapless playback.
+ */
+class DirettaOutput {
+public:
+    /**
+     * @brief Constructor
+     */
+    DirettaOutput();
+    
+    /**
+     * @brief Destructor
      */
     ~DirettaOutput();
     

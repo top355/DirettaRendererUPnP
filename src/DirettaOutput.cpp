@@ -46,7 +46,6 @@ DirettaOutput::DirettaOutput()
     , m_gaplessEnabled(true)       // ⭐ v1.2.0: Gapless enabled by default
     , m_nextTrackPrepared(false)   // ⭐ v1.2.0
     , m_thredMode(1)
-    , m_cycleTime(10000)
     , m_cycleMinTime(333)
     , m_infoCycle(100000)
 {
@@ -1134,15 +1133,29 @@ void DirettaOutput::optimizeNetworkConfig(const AudioFormat& format) {
     if (!m_syncBuffer) {
         return;
     }
-
-
-    DEBUG_LOG("[DirettaOutput] 🔧 Configuring network: VarMax (maximum throughput)");
     
-    // ⭐ v1.2.0: Use VarMax for all formats (best performance with jumbo frames)
-    ACQUA::Clock cycle(m_cycleTime);
+    // ⭐ v1.3.0: Calculate optimal cycle time dynamically
+    DirettaCycleCalculator calculator(m_mtu);
+    
+    // For DSD, use 1 bit per sample; for PCM use actual bit depth
+    int bitsPerSample = format.isDSD ? 1 : format.bitDepth;
+    
+    unsigned int cycleTime = calculator.calculate(
+        format.sampleRate, 
+        format.channels, 
+        bitsPerSample
+    );
+    
+    DEBUG_LOG("[DirettaOutput] 🔧 Network optimization:");
+    DEBUG_LOG("[DirettaOutput]    MTU: " << m_mtu << " bytes");
+    DEBUG_LOG("[DirettaOutput]    Cycle time: " << cycleTime << " µs");
+    DEBUG_LOG("[DirettaOutput]    Mode: VarMax (maximum throughput)");
+    
+    // Configure transfer with calculated cycle time
+    ACQUA::Clock cycle(cycleTime);
     m_syncBuffer->configTransferVarMax(cycle);
     
-    DEBUG_LOG("[DirettaOutput] ✓ Network configured: VarMax mode");
+    DEBUG_LOG("[DirettaOutput] ✓ Network configured");
 }
 
 bool DirettaOutput::seek(int64_t samplePosition) {
