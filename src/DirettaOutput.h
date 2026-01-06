@@ -47,10 +47,6 @@ struct AudioFormat {
     }
 };
 
-//=============================================================================
-// ⭐ v1.3.0: Dynamic Cycle Time Calculator
-//=============================================================================
-
 class DirettaCycleCalculator {
 public:
     static constexpr int OVERHEAD = 24;
@@ -72,23 +68,8 @@ public:
 private:
     uint32_t m_mtu;
     int m_efficientMTU;
-};
+};  // ← ⭐ CE POINT-VIRGULE EST OBLIGATOIRE !
 
-/**
- * @brief Diretta output handler
- * 
- * Manages connection to Diretta DAC and handles audio streaming
- * using SyncBuffer for gapless playback.
- */
-class DirettaOutput {
-public:
-    /**
-     * @brief Constructor
-     */
-    DirettaOutput();
-    
-    /**
-     * @brief Destructor
 /**
  * @brief Diretta output handler
  * 
