@@ -38,6 +38,26 @@ AudioBuffer::~AudioBuffer() {
         delete[] m_data;
     }
 }
+// ⭐ Move constructor (safe transfer of ownership)
+AudioBuffer::AudioBuffer(AudioBuffer&& other) noexcept
+    : m_data(other.m_data)
+    , m_size(other.m_size)
+{
+    other.m_data = nullptr;
+    other.m_size = 0;
+}
+
+// ⭐ Move assignment operator (safe transfer of ownership)
+AudioBuffer& AudioBuffer::operator=(AudioBuffer&& other) noexcept {
+    if (this != &other) {
+        delete[] m_data;
+        m_data = other.m_data;
+        m_size = other.m_size;
+        other.m_data = nullptr;
+        other.m_size = 0;
+    }
+    return *this;
+}
 
 void AudioBuffer::resize(size_t size) {
     if (m_data) {
@@ -382,14 +402,7 @@ bool AudioDecoder::open(const std::string& url) {
     
     m_trackInfo.bitDepth = realBitDepth;
 
-
-DEBUG_LOG("[AudioDecoder] 🎵 PCM: " << m_trackInfo.codec 
-          << " " << m_trackInfo.sampleRate << "Hz/"
-          << m_trackInfo.bitDepth << "bit/"
-          << m_trackInfo.channels << "ch")
-
-    
-    DEBUG_LOG("[AudioDecoder] 🎵 PCM: " << m_trackInfo.codec 
+    DEBUG_LOG("[AudioDecoder] 🎵 PCM: " << m_trackInfo.codec
               << " " << m_trackInfo.sampleRate << "Hz/"
               << m_trackInfo.bitDepth << "bit/"
               << m_trackInfo.channels << "ch");
