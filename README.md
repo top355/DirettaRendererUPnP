@@ -9,7 +9,7 @@
 ---
 
 ![Version](https://img.shields.io/badge/version-1.2.1-blue.svg)
-![Multi-Interface - Gapless enhanced ](https://img.shields.io/badge/multi--interface-supported-green.svg) ← NEW
+![Gapless enhanced ](https://img.shields.io/badge/Gapless PRO-green.svg) ← NEW
 
 ---
 
