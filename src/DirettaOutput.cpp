@@ -1166,53 +1166,26 @@ bool DirettaOutput::seek(int64_t samplePosition) {
         return false;
     }
 
-    // ═══════════════════════════════════════════════════════════════════
-    // ⚠️  v1.3.0: DSD SEEK - Accept but don't execute (for client compatibility)
-    // ═══════════════════════════════════════════════════════════════════
+    // DSD: Silent ignore (prevents distortion)
     if (m_currentFormat.isDSD) {
-        std::cout << "══════════════════════════════════════════════════════" << std::endl;
-        std::cout << "[DirettaOutput] ⚠️  DSD SEEK: Command accepted but not executed" << std::endl;
-        std::cout << "[DirettaOutput] ℹ️  Reason: DSD seek causes audio distortion" << std::endl;
-        std::cout << "[DirettaOutput] 💡 For precise positioning: Stop → Seek → Play" << std::endl;
-        std::cout << "[DirettaOutput] 🔄 Playback continues without interruption" << std::endl;
-        std::cout << "══════════════════════════════════════════════════════" << std::endl;
-        
-        DEBUG_LOG("[DirettaOutput] DSD SEEK: No-op (client compatibility)");
-        
-        // Update position tracker even though we don't actually seek
-        // This keeps internal state consistent
-        m_totalSamplesSent = samplePosition;
-        
-        // Return TRUE to satisfy poorly-implemented UPnP clients (e.g., JPLAY iOS)
-        // These clients may crash if seek returns false
-        return true;  // ← Fake success!
+        return true;
     }
 
-    // ═══════════════════════════════════════════════════════════════════
-    // PCM SEEK - Works perfectly
-    // ═══════════════════════════════════════════════════════════════════
-
+    // PCM: Execute seek
     bool wasPlaying = m_playing;
     
-    // Pause if playing
     if (wasPlaying && m_syncBuffer) {
         m_syncBuffer->stop();
     }
     
-    // PCM: Position is already in samples, no conversion needed
-    int64_t seekPosition = samplePosition;
+    m_syncBuffer->seek(samplePosition);
+    m_totalSamplesSent = samplePosition;
     
-    // Perform seek
-    DEBUG_LOG("[DirettaOutput] → Calling SDK seek(" << seekPosition << ")");
-    m_syncBuffer->seek(seekPosition);
-    m_totalSamplesSent = samplePosition;  // Keep in original units
-    
-    // Resume if was playing
     if (wasPlaying && m_syncBuffer) {
         m_syncBuffer->play();
     }
    
-    DEBUG_LOG("[DirettaOutput] ✓ PCM seeked to position " << seekPosition);
+    DEBUG_LOG("[DirettaOutput] ✓ Seeked to position " << samplePosition);
     return true;
 }
 // ═══════════════════════════════════════════════════════════════
