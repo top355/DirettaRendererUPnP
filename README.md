@@ -209,7 +209,7 @@ The **Diretta Target** acts as a dedicated audio endpoint that receives the pris
 - **Format negotiation**: Automatic format compatibility checking
 - **Connection management**: Robust error handling and reconnection
 
-
+Note: DSD seek is not supported (prevents audio distortion). 
 
 ---
 
