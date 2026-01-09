@@ -195,7 +195,7 @@ public:
     void resume();
     bool isPaused() const { return m_isPaused; }
     bool isPlaying() const { return m_playing; } 
-    bool seek(int64_t samplePosition);
+    
     
     // ═══════════════════════════════════════════════════════════════
     // ⭐ v1.2.0: Gapless Pro - Native SDK gapless support

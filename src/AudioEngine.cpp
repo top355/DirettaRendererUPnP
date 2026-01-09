@@ -1241,7 +1241,10 @@ bool AudioEngine::process(size_t samplesNeeded) {
                     targetSeconds = 0;
                 }
                 
-                // Perform the actual seek
+                if (info.isDSD) {
+                    DEBUG_LOG("[AudioEngine] DSD seek ignored (no-op)");
+                     // Don't call decoder->seek()
+            } else {
                 if (m_currentDecoder->seek(targetSeconds)) {
                     // Update position
                     m_samplesPlayed = static_cast<uint64_t>(targetSeconds * info.sampleRate);
