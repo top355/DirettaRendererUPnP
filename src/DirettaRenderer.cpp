@@ -549,7 +549,16 @@ callbacks.onSetURI = [this](const std::string& uri, const std::string& metadata)
 
 // CRITICAL: SetNextAVTransportURI pour le gapless
 callbacks.onSetNextURI = [this](const std::string& uri, const std::string& metadata) {
-    std::lock_guard<std::mutex> lock(m_mutex);  // Serialize UPnP actions
+    std::lock_guard<std::mutex> lock(m_mutex);
+    
+    // ═══════════════════════════════════════════════════════════════
+    // ⚠️  v1.2.1: Check if gapless is enabled before processing
+    // ═══════════════════════════════════════════════════════════════
+    if (!m_config.gaplessEnabled) {
+        DEBUG_LOG("[DirettaRenderer] ⚠️  SetNextAVTransportURI ignored (gapless disabled)");
+        return;  // Ignore silently - prevents crash during device discovery
+    }
+    
     DEBUG_LOG("[DirettaRenderer] ✓ SetNextAVTransportURI received for gapless");
     m_audioEngine->setNextURI(uri, metadata);
 };
