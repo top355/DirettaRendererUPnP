@@ -1261,7 +1261,7 @@ bool AudioEngine::process(size_t samplesNeeded) {
                 }
             }
        
-        
+     }
         // Continue processing after seek
     }
     
