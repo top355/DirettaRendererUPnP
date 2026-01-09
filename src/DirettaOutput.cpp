@@ -1166,6 +1166,29 @@ bool DirettaOutput::seek(int64_t samplePosition) {
         return false;
     }
 
+    // ═══════════════════════════════════════════════════════════════════
+    // ⚠️  v1.3.0: SEEK NOT SUPPORTED FOR DSD (causes audio distortion)
+    // ═══════════════════════════════════════════════════════════════════
+    if (m_currentFormat.isDSD) {
+        std::cout << "══════════════════════════════════════════════════════" << std::endl;
+        std::cout << "[DirettaOutput] ⚠️  SEEK NOT SUPPORTED FOR DSD FILES" << std::endl;
+        std::cout << "[DirettaOutput] " << std::endl;
+        std::cout << "[DirettaOutput] 💡 Workaround:" << std::endl;
+        std::cout << "[DirettaOutput]    1. Stop playback" << std::endl;
+        std::cout << "[DirettaOutput]    2. Seek to desired position" << std::endl;
+        std::cout << "[DirettaOutput]    3. Resume playback" << std::endl;
+        std::cout << "[DirettaOutput] " << std::endl;
+        std::cout << "[DirettaOutput] ℹ️  PCM SEEK works perfectly" << std::endl;
+        std::cout << "══════════════════════════════════════════════════════" << std::endl;
+        
+        DEBUG_LOG("[DirettaOutput] SEEK rejected for DSD format");
+        return false;
+    }
+
+    // ═══════════════════════════════════════════════════════════════════
+    // PCM SEEK - Works perfectly
+    // ═══════════════════════════════════════════════════════════════════
+
     bool wasPlaying = m_playing;
     
     // Pause if playing
@@ -1173,20 +1196,8 @@ bool DirettaOutput::seek(int64_t samplePosition) {
         m_syncBuffer->stop();
     }
     
-    // ⭐ DSD SEEK CONVERSION
+    // PCM: Position is already in samples, no conversion needed
     int64_t seekPosition = samplePosition;
-    
-    if (m_currentFormat.isDSD) {
-        // DSD: Convert to bytes (32-bit containers)
-        // Same calculation as in createStreamFromAudio()
-        seekPosition = samplePosition * m_currentFormat.channels * 4;
-        
-        std::cout << "[DirettaOutput] DSD seek conversion:" << std::endl;
-        std::cout << "   Input position (bits): " << samplePosition << std::endl;
-        std::cout << "   Output position (bytes): " << seekPosition << std::endl;
-        std::cout << "   Format: DSD" << (m_currentFormat.sampleRate / 44100) 
-                  << " (" << m_currentFormat.sampleRate << " Hz)" << std::endl;
-    }
     
     // Perform seek
     DEBUG_LOG("[DirettaOutput] → Calling SDK seek(" << seekPosition << ")");
@@ -1198,7 +1209,7 @@ bool DirettaOutput::seek(int64_t samplePosition) {
         m_syncBuffer->play();
     }
    
-    DEBUG_LOG("[DirettaOutput] ✓ Seeked to position " << seekPosition);
+    DEBUG_LOG("[DirettaOutput] ✓ PCM seeked to position " << seekPosition);
     return true;
 }
 // ═══════════════════════════════════════════════════════════════
