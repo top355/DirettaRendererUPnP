@@ -1196,7 +1196,7 @@ void DirettaOutput::optimizeNetworkConfig(const AudioFormat& format) {
         
     } else {
         // Fix: Fixed cycle time (precise timing control)
-        bool success = m_syncBuffer->configTransferFix(cycle, 0);
+        bool success = m_syncBuffer->configTransferFix(cycle);
         
         if (success) {
             // Calculate frequency: freq = 1 / (cycle_time_seconds)
