@@ -74,7 +74,7 @@ private:
 };  // ← ⭐ CE POINT-VIRGULE EST OBLIGATOIRE !
 
 // ═══════════════════════════════════════════════════════════════════════════
-// ⭐ v1.3.1: Transfer modes for Diretta SDK
+// ⭐ v1.3.0: Transfer modes for Diretta SDK
 // ═══════════════════════════════════════════════════════════════════════════
 /**
  * @brief Transfer modes for Diretta SDK
@@ -321,7 +321,7 @@ private:
     int m_cycleMinTime;
     int m_infoCycle;
     
-    // ⭐ v1.3.1: Transfer mode
+    // ⭐ v1.3.0: Transfer mode
     TransferMode m_transferMode;
     
     // Helper functions

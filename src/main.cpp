@@ -10,10 +10,10 @@
 #include <memory>
 #include <thread>
 #include <chrono>
-#include <iomanip>    // ⭐ v1.3.1: Pour std::fixed, std::setprecision
+#include <iomanip>    // ⭐ v1.3.0: Pour std::fixed, std::setprecision
 
 // Version information
-#define RENDERER_VERSION "1.3.1"    // ⭐ v1.3.1: Transfer mode option (VarMax/Fix)
+#define RENDERER_VERSION "1.3.0"    // ⭐ v1.3.0: Transfer mode option (VarMax/Fix)
 #define RENDERER_BUILD_DATE __DATE__
 #define RENDERER_BUILD_TIME __TIME__
 // Global renderer instance for signal handler
@@ -59,7 +59,7 @@ DirettaRenderer::Config parseArguments(int argc, char* argv[]) {
     config.gaplessEnabled = true;
     config.bufferSeconds = 2.0f;  // Default 2 seconds (v1.0.9)
     
-    // ⭐ v1.3.1: Transfer mode default
+    // ⭐ v1.3.0: Transfer mode default
     config.transferMode = TransferMode::VarMax;
     
     // ⭐ NEW: Advanced Diretta SDK settings
@@ -121,7 +121,7 @@ DirettaRenderer::Config parseArguments(int argc, char* argv[]) {
                 std::cerr << "⚠️  Warning: MTU < 1500 may cause issues" << std::endl;
             }
         }
-        // ⭐ v1.3.1: Transfer mode option
+        // ⭐ v1.3.0: Transfer mode option
         else if (arg == "--transfer-mode" && i + 1 < argc) {
             std::string mode = argv[++i];
             if (mode == "varmax") {
@@ -235,7 +235,7 @@ DirettaRenderer::Config parseArguments(int argc, char* argv[]) {
     }
     
     // ═══════════════════════════════════════════════════════════════
-    // ⭐ v1.3.1: Validate Fix mode requires explicit cycle-time
+    // ⭐ v1.3.0: Validate Fix mode requires explicit cycle-time
     // ═══════════════════════════════════════════════════════════════
     if (config.transferMode == TransferMode::Fix) {
         // Check if user explicitly set cycle-time
@@ -285,7 +285,7 @@ int main(int argc, char* argv[]) {
     std::cout << "  Gapless:     " << (config.gaplessEnabled ? "enabled" : "disabled") << std::endl;
     std::cout << "  Buffer:      " << config.bufferSeconds << " seconds" << std::endl;
     
-    // ⭐ v1.3.1: Display transfer mode
+    // ⭐ v1.3.0: Display transfer mode
     std::cout << "  Transfer:    " 
               << (config.transferMode == TransferMode::VarMax ? "VarMax (adaptive)" : "Fix (precise)") 
               << std::endl;
@@ -306,7 +306,7 @@ int main(int argc, char* argv[]) {
         std::cout << "\nAdvanced Diretta Settings:" << std::endl;
         if (config.threadMode != 1)
             std::cout << "  Thread Mode: " << config.threadMode << std::endl;
-        // ⭐ v1.3.1: Always show cycle time in Fix mode with frequency
+        // ⭐ v1.3.0: Always show cycle time in Fix mode with frequency
         if (config.transferMode == TransferMode::Fix) {
             double freq_hz = 1000000.0 / config.cycleTime;
             std::cout << "  Cycle Time:  " << config.cycleTime << " µs (" 
