@@ -76,7 +76,7 @@ void DirettaOutput::setMTU(uint32_t mtu) {
     
     std::cout << std::endl;
 }
-void DirettaOutput::setTransferMode(DirettaRenderer::TransferMode mode) {
+void DirettaOutput::setTransferMode(TransferMode mode) {
     if (m_connected) {
         std::cerr << "[DirettaOutput] ⚠️  Cannot change transfer mode while connected" << std::endl;
         return;
