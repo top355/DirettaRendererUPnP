@@ -1250,7 +1250,7 @@ bool DirettaOutput::configureDiretta(const AudioFormat& format) {
 // ⭐ v1.2.0 Stable: Network optimization by format
 // ═══════════════════════════════════════════════════════════════
 
-void DirettaOutput::optimizeNetworkConfig(const AudioFormat& /*format*/) {
+void DirettaOutput::optimizeNetworkConfig(const AudioFormat& format) {
     if (!m_syncBuffer) {
         return;
     }
@@ -1259,7 +1259,7 @@ void DirettaOutput::optimizeNetworkConfig(const AudioFormat& /*format*/) {
     DEBUG_LOG("[DirettaOutput]    MTU: " << m_mtu << " bytes");
     
     // ═══════════════════════════════════════════════════════════════
-    // ⭐ v1.3.1: Determine cycle time (dynamic or user-specified)
+    // ⭐ v1.3.0: Determine cycle time (dynamic or user-specified)
     // ═══════════════════════════════════════════════════════════════
     
     unsigned int cycleTime;
@@ -1288,7 +1288,7 @@ void DirettaOutput::optimizeNetworkConfig(const AudioFormat& /*format*/) {
     }
     
 // ═══════════════════════════════════════════════════════════════
-// ⭐ v1.3.1: Configure transfer mode
+// ⭐ v1.3.0: Configure transfer mode
 // ═══════════════════════════════════════════════════════════════
 
 if (m_transferMode == TransferMode::VarMax) {
